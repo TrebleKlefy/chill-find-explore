@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Search, MapPin, MessageSquare, Eye, Edit, Trash2, Flag } from 'lucide-react';
+import { Search, MapPin, MessageSquare, Eye, Edit, Trash2, Flag, X, Star, Calendar, Utensils, Coffee } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AdminContentManagement = () => {
@@ -28,8 +29,20 @@ const AdminContentManagement = () => {
       date: '2024-06-08',
       reports: 0,
       views: 245,
-      description: 'A warm and inviting Italian restaurant with authentic cuisine and excellent service.',
-      location: '123 Main St, Downtown'
+      description: 'A warm and inviting Italian restaurant with authentic cuisine and excellent service. Perfect for romantic dinners and family gatherings.',
+      location: '123 Main St, Downtown',
+      address: '123 Main St, Downtown, City 12345',
+      phone: '+1 (555) 123-4567',
+      hours: 'Mon-Sun: 11:00 AM - 10:00 PM',
+      rating: 4.5,
+      price: '$$',
+      tags: ['italian', 'romantic', 'family-friendly'],
+      images: [
+        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500',
+        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500',
+        'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=500'
+      ],
+      coordinates: { lat: 40.7128, lng: -74.0060 }
     },
     {
       id: 2,
@@ -40,8 +53,15 @@ const AdminContentManagement = () => {
       date: '2024-06-07',
       reports: 1,
       views: 123,
-      description: 'Had the most incredible pasta dish last night. The atmosphere was perfect for a date night.',
-      location: 'Cozy Italian Bistro'
+      description: 'Had the most incredible pasta dish last night. The atmosphere was perfect for a date night. The service was impeccable and the wine selection was outstanding.',
+      location: 'Cozy Italian Bistro',
+      tags: ['dinner', 'pasta', 'date-night'],
+      likes: 45,
+      comments: 12,
+      images: [
+        'https://images.unsplash.com/photo-1551218808-94e220e084d2?w=500',
+        'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500'
+      ]
     },
     {
       id: 3,
@@ -52,8 +72,17 @@ const AdminContentManagement = () => {
       date: '2024-06-06',
       reports: 0,
       views: 67,
-      description: 'Best street tacos in the city! Quick service and amazing flavors.',
-      location: '456 Food Ave, Market District'
+      description: 'Best street tacos in the city! Quick service and amazing flavors. A must-try for food lovers.',
+      location: '456 Food Ave, Market District',
+      address: '456 Food Ave, Market District, City 12345',
+      phone: '+1 (555) 987-6543',
+      hours: 'Mon-Fri: 11:00 AM - 9:00 PM, Sat-Sun: 10:00 AM - 10:00 PM',
+      rating: 4.2,
+      price: '$',
+      tags: ['tacos', 'street-food', 'casual'],
+      images: [
+        'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=500'
+      ]
     },
     {
       id: 4,
@@ -64,8 +93,16 @@ const AdminContentManagement = () => {
       date: '2024-06-05',
       reports: 3,
       views: 89,
-      description: 'Found this amazing little coffee shop tucked away in an alley. Great for remote work!',
-      location: 'Downtown Coffee Co.'
+      description: 'Found this amazing little coffee shop tucked away in an alley. Great for remote work! The coffee is exceptional and the vibe is perfect for productivity.',
+      location: 'Downtown Coffee Co.',
+      tags: ['coffee', 'work', 'hidden-gem'],
+      likes: 23,
+      comments: 8,
+      images: [
+        'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=500',
+        'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=500',
+        'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500'
+      ]
     }
   ]);
 
@@ -89,13 +126,26 @@ const AdminContentManagement = () => {
     return type === 'place' ? <MapPin className="h-4 w-4" /> : <MessageSquare className="h-4 w-4" />;
   };
 
+  const getContentTypeInfo = (type: string) => {
+    switch (type) {
+      case 'event':
+        return { icon: Calendar, label: 'Event', color: 'bg-blue-100 text-blue-800' };
+      case 'restaurant':
+        return { icon: Utensils, label: 'Restaurant', color: 'bg-green-100 text-green-800' };
+      case 'chill':
+        return { icon: Coffee, label: 'Chill Spot', color: 'bg-purple-100 text-purple-800' };
+      default:
+        return { icon: MapPin, label: type === 'place' ? 'Place' : 'Post', color: 'bg-gray-100 text-gray-800' };
+    }
+  };
+
   const handleViewContent = (item: any) => {
-    setSelectedContent(item);
+    setSelectedContent({ ...item });
     setIsViewModalOpen(true);
   };
 
   const handleEditContent = (item: any) => {
-    setSelectedContent(item);
+    setSelectedContent({ ...item });
     setIsEditModalOpen(true);
   };
 
@@ -108,6 +158,16 @@ const AdminContentManagement = () => {
       toast({
         title: "Content updated",
         description: "The content has been successfully updated.",
+      });
+    }
+  };
+
+  const handleDeleteImage = (imageIndex: number) => {
+    if (selectedContent && selectedContent.images) {
+      const updatedImages = selectedContent.images.filter((_: any, index: number) => index !== imageIndex);
+      setSelectedContent({
+        ...selectedContent,
+        images: updatedImages
       });
     }
   };
@@ -134,6 +194,37 @@ const AdminContentManagement = () => {
       description: "The content has been permanently deleted.",
       variant: "destructive"
     });
+  };
+
+  const handleTagChange = (index: number, value: string) => {
+    if (selectedContent && selectedContent.tags) {
+      const updatedTags = [...selectedContent.tags];
+      updatedTags[index] = value;
+      setSelectedContent({
+        ...selectedContent,
+        tags: updatedTags
+      });
+    }
+  };
+
+  const handleAddTag = () => {
+    if (selectedContent) {
+      const updatedTags = [...(selectedContent.tags || []), ''];
+      setSelectedContent({
+        ...selectedContent,
+        tags: updatedTags
+      });
+    }
+  };
+
+  const handleRemoveTag = (index: number) => {
+    if (selectedContent && selectedContent.tags) {
+      const updatedTags = selectedContent.tags.filter((_: any, i: number) => i !== index);
+      setSelectedContent({
+        ...selectedContent,
+        tags: updatedTags
+      });
+    }
   };
 
   return (
@@ -313,44 +404,120 @@ const AdminContentManagement = () => {
 
       {/* View Content Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {selectedContent && getTypeIcon(selectedContent.type)}
               {selectedContent?.title}
+              {selectedContent?.rating && (
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm">{selectedContent.rating}</span>
+                </div>
+              )}
             </DialogTitle>
             <DialogDescription>
-              Content details and information
+              Detailed view of content information
             </DialogDescription>
           </DialogHeader>
           {selectedContent && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-6">
+              {/* Images */}
+              {selectedContent.images && selectedContent.images.length > 0 && (
                 <div>
-                  <label className="text-sm font-medium">Author</label>
-                  <p className="text-sm text-muted-foreground">{selectedContent.author}</p>
+                  <label className="text-sm font-medium mb-2 block">Images</label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {selectedContent.images.map((image: string, index: number) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={image}
+                          alt={`${selectedContent.title} - Image ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <label className="text-sm font-medium">Status</label>
-                  <div className="mt-1">{getStatusBadge(selectedContent.status)}</div>
+              )}
+
+              {/* Basic Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Author</label>
+                    <p className="text-sm text-muted-foreground">{selectedContent.author}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Status</label>
+                    <div className="mt-1">{getStatusBadge(selectedContent.status)}</div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Date</label>
+                    <p className="text-sm text-muted-foreground">{selectedContent.date}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Views</label>
+                    <p className="text-sm text-muted-foreground">{selectedContent.views}</p>
+                  </div>
+                  {selectedContent.price && (
+                    <div>
+                      <label className="text-sm font-medium">Price Range</label>
+                      <p className="text-sm text-muted-foreground">{selectedContent.price}</p>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <label className="text-sm font-medium">Date</label>
-                  <p className="text-sm text-muted-foreground">{selectedContent.date}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Views</label>
-                  <p className="text-sm text-muted-foreground">{selectedContent.views}</p>
+
+                <div className="space-y-4">
+                  {selectedContent.phone && (
+                    <div>
+                      <label className="text-sm font-medium">Phone</label>
+                      <p className="text-sm text-muted-foreground">{selectedContent.phone}</p>
+                    </div>
+                  )}
+                  {selectedContent.hours && (
+                    <div>
+                      <label className="text-sm font-medium">Hours</label>
+                      <p className="text-sm text-muted-foreground">{selectedContent.hours}</p>
+                    </div>
+                  )}
+                  {selectedContent.likes !== undefined && (
+                    <div>
+                      <label className="text-sm font-medium">Likes</label>
+                      <p className="text-sm text-muted-foreground">{selectedContent.likes}</p>
+                    </div>
+                  )}
+                  {selectedContent.comments !== undefined && (
+                    <div>
+                      <label className="text-sm font-medium">Comments</label>
+                      <p className="text-sm text-muted-foreground">{selectedContent.comments}</p>
+                    </div>
+                  )}
                 </div>
               </div>
+
+              {/* Description */}
               <div>
                 <label className="text-sm font-medium">Description</label>
                 <p className="text-sm text-muted-foreground mt-1">{selectedContent.description}</p>
               </div>
+
+              {/* Location */}
               <div>
                 <label className="text-sm font-medium">Location</label>
-                <p className="text-sm text-muted-foreground mt-1">{selectedContent.location}</p>
+                <p className="text-sm text-muted-foreground mt-1">{selectedContent.address || selectedContent.location}</p>
               </div>
+
+              {/* Tags */}
+              {selectedContent.tags && selectedContent.tags.length > 0 && (
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Tags</label>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedContent.tags.map((tag: string, index: number) => (
+                      <Badge key={index} variant="outline">{tag}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </DialogContent>
@@ -358,7 +525,7 @@ const AdminContentManagement = () => {
 
       {/* Edit Content Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Content</DialogTitle>
             <DialogDescription>
@@ -366,31 +533,153 @@ const AdminContentManagement = () => {
             </DialogDescription>
           </DialogHeader>
           {selectedContent && (
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Title</label>
-                <Input
-                  value={selectedContent.title}
-                  onChange={(e) => setSelectedContent({...selectedContent, title: e.target.value})}
-                  className="mt-1"
-                />
+            <div className="space-y-6">
+              {/* Images Management */}
+              {selectedContent.images && selectedContent.images.length > 0 && (
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Images</label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {selectedContent.images.map((image: string, index: number) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={image}
+                          alt={`${selectedContent.title} - Image ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleDeleteImage(index)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Basic Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Title</label>
+                    <Input
+                      value={selectedContent.title}
+                      onChange={(e) => setSelectedContent({...selectedContent, title: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Author</label>
+                    <Input
+                      value={selectedContent.author}
+                      onChange={(e) => setSelectedContent({...selectedContent, author: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  {selectedContent.phone && (
+                    <div>
+                      <label className="text-sm font-medium">Phone</label>
+                      <Input
+                        value={selectedContent.phone}
+                        onChange={(e) => setSelectedContent({...selectedContent, phone: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                  )}
+                  {selectedContent.price && (
+                    <div>
+                      <label className="text-sm font-medium">Price Range</label>
+                      <Input
+                        value={selectedContent.price}
+                        onChange={(e) => setSelectedContent({...selectedContent, price: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Location/Address</label>
+                    <Input
+                      value={selectedContent.address || selectedContent.location}
+                      onChange={(e) => setSelectedContent({...selectedContent, address: e.target.value, location: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  {selectedContent.hours && (
+                    <div>
+                      <label className="text-sm font-medium">Hours</label>
+                      <Input
+                        value={selectedContent.hours}
+                        onChange={(e) => setSelectedContent({...selectedContent, hours: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                  )}
+                  {selectedContent.rating && (
+                    <div>
+                      <label className="text-sm font-medium">Rating</label>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="5"
+                        step="0.1"
+                        value={selectedContent.rating}
+                        onChange={(e) => setSelectedContent({...selectedContent, rating: parseFloat(e.target.value)})}
+                        className="mt-1"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
+
+              {/* Description */}
               <div>
                 <label className="text-sm font-medium">Description</label>
-                <Input
+                <Textarea
                   value={selectedContent.description}
                   onChange={(e) => setSelectedContent({...selectedContent, description: e.target.value})}
                   className="mt-1"
+                  rows={4}
                 />
               </div>
+
+              {/* Tags */}
               <div>
-                <label className="text-sm font-medium">Location</label>
-                <Input
-                  value={selectedContent.location}
-                  onChange={(e) => setSelectedContent({...selectedContent, location: e.target.value})}
-                  className="mt-1"
-                />
+                <label className="text-sm font-medium mb-2 block">Tags</label>
+                <div className="space-y-2">
+                  {selectedContent.tags && selectedContent.tags.map((tag: string, index: number) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <Input
+                        value={tag}
+                        onChange={(e) => handleTagChange(index, e.target.value)}
+                        placeholder="Enter tag"
+                        className="flex-1"
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleRemoveTag(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleAddTag}
+                  >
+                    Add Tag
+                  </Button>
+                </div>
               </div>
+
+              {/* Action Buttons */}
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
                   Cancel
