@@ -93,6 +93,7 @@ const PostFeed = () => {
   };
 
   const handlePostClick = (post: any) => {
+    console.log('Post clicked:', post);
     setSelectedPost(post);
     setIsModalOpen(true);
   };
@@ -161,16 +162,40 @@ const PostFeed = () => {
 
                 <div className="flex items-center justify-between pt-4 border-t">
                   <div className="flex items-center space-x-4">
-                    <Button variant="ghost" size="sm" className="text-muted-foreground">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-muted-foreground"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log('Like clicked');
+                      }}
+                    >
                       <Heart className="h-4 w-4 mr-1" />
                       {post.likes}
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-muted-foreground">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-muted-foreground"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log('Comment clicked');
+                      }}
+                    >
                       <MessageCircle className="h-4 w-4 mr-1" />
                       {post.comments}
                     </Button>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-muted-foreground"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log('Share clicked');
+                    }}
+                  >
                     <Share className="h-4 w-4 mr-1" />
                     Share
                   </Button>
