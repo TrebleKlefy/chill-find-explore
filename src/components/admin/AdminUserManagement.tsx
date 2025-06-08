@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Search, UserPlus, MoreHorizontal, Ban, Check, Mail, UserX, Shield, Eye, Edit } from 'lucide-react';
 
@@ -19,10 +19,20 @@ const AdminUserManagement = () => {
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [suspendModalOpen, setSuspendModalOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [addUserModalOpen, setAddUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [emailSubject, setEmailSubject] = useState('');
   const [emailMessage, setEmailMessage] = useState('');
   const [suspendReason, setSuspendReason] = useState('');
+  
+  // New user form state
+  const [newUser, setNewUser] = useState({
+    name: '',
+    email: '',
+    role: 'user',
+    status: 'active'
+  });
+  
   const { toast } = useToast();
 
   const users = [
@@ -82,6 +92,33 @@ const AdminUserManagement = () => {
       pending: 'secondary'
     };
     return <Badge variant={variants[status as keyof typeof variants] as any}>{status}</Badge>;
+  };
+
+  const handleAddUser = () => {
+    setNewUser({
+      name: '',
+      email: '',
+      role: 'user',
+      status: 'active'
+    });
+    setAddUserModalOpen(true);
+  };
+
+  const handleCreateUser = () => {
+    console.log('Creating new user:', newUser);
+    
+    toast({
+      title: "User Created",
+      description: `${newUser.name} has been successfully created`,
+    });
+    
+    setAddUserModalOpen(false);
+    setNewUser({
+      name: '',
+      email: '',
+      role: 'user',
+      status: 'active'
+    });
   };
 
   const handleEmailUser = (user: any) => {
@@ -216,7 +253,7 @@ const AdminUserManagement = () => {
                 Pending
               </Button>
             </div>
-            <Button>
+            <Button onClick={handleAddUser}>
               <UserPlus className="mr-2 h-4 w-4" />
               Add User
             </Button>
@@ -363,6 +400,75 @@ const AdminUserManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Add User Modal */}
+      <Dialog open={addUserModalOpen} onOpenChange={setAddUserModalOpen}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Add New User</DialogTitle>
+            <DialogDescription>
+              Create a new user account. An invitation will be sent to their email.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="newUserName">Full Name</Label>
+              <Input
+                id="newUserName"
+                value={newUser.name}
+                onChange={(e) => setNewUser(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Enter full name"
+              />
+            </div>
+            <div>
+              <Label htmlFor="newUserEmail">Email Address</Label>
+              <Input
+                id="newUserEmail"
+                type="email"
+                value={newUser.email}
+                onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="Enter email address"
+              />
+            </div>
+            <div>
+              <Label htmlFor="newUserRole">Role</Label>
+              <Select value={newUser.role} onValueChange={(value) => setNewUser(prev => ({ ...prev, role: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="moderator">Moderator</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="newUserStatus">Initial Status</Label>
+              <Select value={newUser.status} onValueChange={(value) => setNewUser(prev => ({ ...prev, status: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddUserModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleCreateUser} 
+              disabled={!newUser.name || !newUser.email}
+            >
+              Create User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Email Modal */}
       <Dialog open={emailModalOpen} onOpenChange={setEmailModalOpen}>
