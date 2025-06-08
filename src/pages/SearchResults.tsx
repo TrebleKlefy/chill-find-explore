@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { MapPin, Star, Clock, ArrowLeft, Calendar, Utensils, Coffee, Search, Filter, Navigation, Phone, Clock3, ExternalLink } from "lucide-react";
 import SearchBar from "@/components/search/SearchBar";
 import PostDetailsModal from "@/components/posts/PostDetailsModal";
+import LocationButton from "@/components/ui/location-button";
 
 const SearchResults = () => {
   const navigate = useNavigate();
@@ -127,6 +126,12 @@ const SearchResults = () => {
     setIsDetailsOpen(true);
   };
 
+  const handleLocationDetected = (location: { lat: number; lng: number; address: string }) => {
+    console.log("Location detected:", location);
+    // Update search with location context
+    navigate(`/search?q=Near ${encodeURIComponent(location.address)}`);
+  };
+
   const getTypeInfo = (type: string) => {
     switch (type) {
       case 'event':
@@ -191,6 +196,13 @@ const SearchResults = () => {
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
+              </div>
+              <div className="flex justify-center mt-3">
+                <LocationButton
+                  onLocationDetected={handleLocationDetected}
+                  variant="ghost"
+                  size="sm"
+                />
               </div>
             </div>
           </div>
