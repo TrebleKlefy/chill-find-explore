@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { MapPin, Star, Clock, ArrowLeft, Calendar, Utensils, Coffee, Search, Filter, Navigation, Phone, Clock3, ExternalLink } from "lucide-react";
 import SearchBar from "@/components/search/SearchBar";
 import PostDetailsModal from "@/components/posts/PostDetailsModal";
-import LocationButton from "@/components/ui/location-button";
+import LocationButton from "@/components/location/LocationButton";
 
 const SearchResults = () => {
   const navigate = useNavigate();
