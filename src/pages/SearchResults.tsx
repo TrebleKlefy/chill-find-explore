@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -167,27 +168,31 @@ const SearchResults = () => {
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex-1">
-              <SearchBar onSearch={handleNewSearch} />
+              <div className="flex space-x-2">
+                <div className="flex-1 relative">
+                  <SearchBar onSearch={handleNewSearch} showLocationButton={false} />
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="flex items-center space-x-2 h-10">
+                      <Filter className="h-4 w-4" />
+                      <span>{filterOptions.find(opt => opt.value === selectedFilter)?.label}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="bg-popover border shadow-md z-50">
+                    {filterOptions.map((option) => (
+                      <DropdownMenuItem
+                        key={option.value}
+                        onClick={() => setSelectedFilter(option.value)}
+                        className="cursor-pointer hover:bg-accent"
+                      >
+                        {option.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center space-x-2 h-10">
-                  <Filter className="h-4 w-4" />
-                  <span>{filterOptions.find(opt => opt.value === selectedFilter)?.label}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-popover border shadow-md z-50">
-                {filterOptions.map((option) => (
-                  <DropdownMenuItem
-                    key={option.value}
-                    onClick={() => setSelectedFilter(option.value)}
-                    className="cursor-pointer hover:bg-accent"
-                  >
-                    {option.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </div>
       </header>
