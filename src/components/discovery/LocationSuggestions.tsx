@@ -24,7 +24,7 @@ const LocationSuggestions = ({ selectedMood }: LocationSuggestionsProps) => {
         'https://images.unsplash.com/photo-1551782450-a2132b4ba212?w=300&h=200&fit=crop',
         'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=300&h=200&fit=crop'
       ],
-      tags: ['Italian', 'Pasta', 'Wine'],
+      tags: ['Italian', 'Pasta', 'Wine', 'Romantic', 'Foodie'],
       rating: 4.5,
       price: '$$',
       coordinates: { lat: 40.7128, lng: -74.0060 }
@@ -38,7 +38,7 @@ const LocationSuggestions = ({ selectedMood }: LocationSuggestionsProps) => {
         'https://images.unsplash.com/photo-1497900301285-9ac396b9caaa?w=300&h=200&fit=crop',
         'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&h=200&fit=crop'
       ],
-      tags: ['Tea', 'Garden', 'Relaxing'],
+      tags: ['Tea', 'Garden', 'Relaxing', 'Relaxed'],
       rating: 4.2,
       price: '$',
       coordinates: { lat: 40.7589, lng: -73.9851 }
@@ -52,21 +52,35 @@ const LocationSuggestions = ({ selectedMood }: LocationSuggestionsProps) => {
         'https://images.unsplash.com/photo-1541424427-059903cb3f15?w=300&h=200&fit=crop',
         'https://images.unsplash.com/photo-1519162842558-59bd58ca5c98?w=300&h=200&fit=crop'
       ],
-      tags: ['Dance', 'Music', 'Nightlife'],
+      tags: ['Dance', 'Music', 'Nightlife', 'Social', 'Adventurous'],
       rating: 4.0,
       price: '$$$',
       coordinates: { lat: 40.6892, lng: -74.0445 }
+    },
+    {
+      id: 104,
+      type: 'restaurant',
+      title: 'Street Food Corner',
+      description: 'Authentic local street food with diverse options',
+      images: [
+        'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=250&fit=crop'
+      ],
+      tags: ['Street Food', 'Quick Bites', 'Local', 'Adventurous', 'Foodie'],
+      rating: 4.4,
+      price: '$',
+      coordinates: { lat: 40.7282, lng: -73.7949 }
     }
   ];
 
   const getMoodBasedSuggestions = (mood: string | null) => {
     if (!mood) return mockSuggestions;
 
+    // Updated mood keywords to match the actual mood IDs from MoodSelector
     const moodKeywords = {
-      'Romantic': ['Italian', 'Wine', 'Garden'],
-      'Happy': ['Dance', 'Music', 'Nightlife'],
-      'Relaxed': ['Tea', 'Garden', 'Relaxing'],
-      'Adventurous': ['Hiking', 'Nature', 'Exploration']
+      'adventurous': ['Adventurous', 'Dance', 'Music', 'Nightlife', 'Street Food'],
+      'relaxed': ['Relaxed', 'Tea', 'Garden', 'Relaxing'],
+      'social': ['Social', 'Dance', 'Music', 'Nightlife'],
+      'foodie': ['Foodie', 'Italian', 'Pasta', 'Wine', 'Street Food', 'Quick Bites']
     };
 
     const keywords = moodKeywords[mood as keyof typeof moodKeywords] || [];
