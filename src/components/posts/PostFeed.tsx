@@ -108,7 +108,7 @@ const PostFeed = () => {
         {mockPosts.map((post) => {
           const typeInfo = getTypeInfo(post.type);
           const TypeIcon = typeInfo.icon;
-          const displayImage = post.images && post.images.length > 0 ? post.images[0] : post.image;
+          const displayImage = post.images && post.images.length > 0 ? post.images[0] : '';
 
           return (
             <Card 
