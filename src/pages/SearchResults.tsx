@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -164,23 +165,23 @@ const SearchResults = () => {
               <h1 className="text-xl font-bold">Discover</h1>
             </div>
           </div>
-          <div className="flex space-x-4 items-center">
+          <div className="flex items-center space-x-4">
             <div className="flex-1">
               <SearchBar onSearch={handleNewSearch} />
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center space-x-2">
+                <Button variant="outline" className="flex items-center space-x-2 h-10">
                   <Filter className="h-4 w-4" />
                   <span>{filterOptions.find(opt => opt.value === selectedFilter)?.label}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white border shadow-md">
+              <DropdownMenuContent className="bg-popover border shadow-md z-50">
                 {filterOptions.map((option) => (
                   <DropdownMenuItem
                     key={option.value}
                     onClick={() => setSelectedFilter(option.value)}
-                    className="cursor-pointer hover:bg-gray-100"
+                    className="cursor-pointer hover:bg-accent"
                   >
                     {option.label}
                   </DropdownMenuItem>
