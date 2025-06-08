@@ -10,13 +10,15 @@ import {
   Settings,
   BarChart3,
   Shield,
-  Database
+  Database,
+  Plus
 } from 'lucide-react';
 import { AdminStats } from '@/components/admin/AdminStats';
 import { AdminUserManagement } from '@/components/admin/AdminUserManagement';
 import { AdminContentManagement } from '@/components/admin/AdminContentManagement';
 import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
 import { AdminSettings } from '@/components/admin/AdminSettings';
+import CreatePostForm from '@/components/posts/CreatePostForm';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = React.useState('overview');
@@ -25,6 +27,7 @@ const AdminDashboard = () => {
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'content', label: 'Content', icon: MapPin },
+    { id: 'create-post', label: 'Create Post', icon: Plus },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -37,6 +40,8 @@ const AdminDashboard = () => {
         return <AdminUserManagement />;
       case 'content':
         return <AdminContentManagement />;
+      case 'create-post':
+        return <CreatePostForm onSuccess={() => setActiveTab('content')} />;
       case 'analytics':
         return <AdminAnalytics />;
       case 'settings':

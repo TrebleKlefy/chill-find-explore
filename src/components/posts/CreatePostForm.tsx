@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { MapPin, Camera, Calendar, Utensils, Coffee } from "lucide-react";
+import LocationButton from "@/components/location/LocationButton";
 
 interface CreatePostFormProps {
   onSuccess: () => void;
@@ -34,6 +35,14 @@ const CreatePostForm = ({ onSuccess }: CreatePostFormProps) => {
       });
       onSuccess();
     }, 1000);
+  };
+
+  const handleLocationDetected = (detectedLocation: { lat: number; lng: number; address: string }) => {
+    setAddress(detectedLocation.address);
+    toast({
+      title: "Location detected",
+      description: "Your current location has been added to the address field.",
+    });
   };
 
   const getTypeIcon = (type: string) => {
@@ -121,13 +130,21 @@ const CreatePostForm = ({ onSuccess }: CreatePostFormProps) => {
 
             <div className="space-y-2">
               <Label htmlFor="address">Address</Label>
-              <Input
-                id="address"
-                placeholder="Street address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="address"
+                  placeholder="Street address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  required
+                  className="flex-1"
+                />
+                <LocationButton 
+                  onLocationDetected={handleLocationDetected}
+                  variant="outline"
+                  size="default"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
