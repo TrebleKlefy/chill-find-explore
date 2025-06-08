@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Search, UserPlus, MoreHorizontal, Ban, Check, Mail, UserX, Shield, Eye, Edit } from 'lucide-react';
+import { Search, UserPlus, MoreHorizontal, Ban, Check, Mail, UserX, Shield, Eye, Edit, Calendar, MapPin, MessageSquare } from 'lucide-react';
 
 const AdminUserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,6 +20,8 @@ const AdminUserManagement = () => {
   const [suspendModalOpen, setSuspendModalOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [addUserModalOpen, setAddUserModalOpen] = useState(false);
+  const [viewProfileModalOpen, setViewProfileModalOpen] = useState(false);
+  const [editUserModalOpen, setEditUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [emailSubject, setEmailSubject] = useState('');
   const [emailMessage, setEmailMessage] = useState('');
@@ -27,6 +29,14 @@ const AdminUserManagement = () => {
   
   // New user form state
   const [newUser, setNewUser] = useState({
+    name: '',
+    email: '',
+    role: 'user',
+    status: 'active'
+  });
+  
+  // Edit user form state
+  const [editUser, setEditUser] = useState({
     name: '',
     email: '',
     role: 'user',
@@ -44,7 +54,11 @@ const AdminUserManagement = () => {
       joinDate: '2024-01-15',
       posts: 23,
       lastActive: '2024-06-08',
-      role: 'user'
+      role: 'user',
+      location: 'New York, NY',
+      bio: 'Love exploring new places and sharing hidden gems with fellow travelers.',
+      totalLikes: 156,
+      totalComments: 89
     },
     {
       id: 2,
@@ -54,7 +68,11 @@ const AdminUserManagement = () => {
       joinDate: '2024-02-20',
       posts: 45,
       lastActive: '2024-06-07',
-      role: 'moderator'
+      role: 'moderator',
+      location: 'San Francisco, CA',
+      bio: 'Professional photographer capturing the beauty of urban landscapes.',
+      totalLikes: 342,
+      totalComments: 234
     },
     {
       id: 3,
@@ -64,7 +82,11 @@ const AdminUserManagement = () => {
       joinDate: '2024-03-10',
       posts: 12,
       lastActive: '2024-05-15',
-      role: 'user'
+      role: 'user',
+      location: 'Chicago, IL',
+      bio: 'Adventure seeker and mountain climbing enthusiast.',
+      totalLikes: 67,
+      totalComments: 43
     },
     {
       id: 4,
@@ -74,7 +96,11 @@ const AdminUserManagement = () => {
       joinDate: '2024-06-01',
       posts: 3,
       lastActive: '2024-06-08',
-      role: 'user'
+      role: 'user',
+      location: 'Miami, FL',
+      bio: 'Beach lover and sunset photographer.',
+      totalLikes: 24,
+      totalComments: 12
     }
   ];
 
@@ -197,11 +223,31 @@ const AdminUserManagement = () => {
   };
 
   const handleViewProfile = (user: any) => {
-    console.log('Viewing user profile:', user.id);
-    toast({
-      title: "Opening Profile",
-      description: `Opening profile for ${user.name}`,
+    setSelectedUser(user);
+    setViewProfileModalOpen(true);
+  };
+
+  const handleEditUser = (user: any) => {
+    setSelectedUser(user);
+    setEditUser({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      status: user.status
     });
+    setEditUserModalOpen(true);
+  };
+
+  const handleUpdateUser = () => {
+    console.log('Updating user:', selectedUser?.id, editUser);
+    
+    toast({
+      title: "User Updated",
+      description: `${editUser.name} has been successfully updated`,
+    });
+    
+    setEditUserModalOpen(false);
+    setSelectedUser(null);
   };
 
   return (
@@ -335,7 +381,7 @@ const AdminUserManagement = () => {
                               <Eye className="mr-2 h-4 w-4" />
                               View Profile
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleEditUser(user)}>
                               <Edit className="mr-2 h-4 w-4" />
                               Edit User
                             </DropdownMenuItem>
@@ -400,6 +446,173 @@ const AdminUserManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* View Profile Modal */}
+      <Dialog open={viewProfileModalOpen} onOpenChange={setViewProfileModalOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>User Profile - {selectedUser?.name}</DialogTitle>
+            <DialogDescription>
+              Detailed information about this user account
+            </DialogDescription>
+          </DialogHeader>
+          {selectedUser && (
+            <div className="space-y-6">
+              {/* Basic Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium">Full Name</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{selectedUser.name}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Email</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{selectedUser.email}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Status</Label>
+                  <div className="mt-1">{getStatusBadge(selectedUser.status)}</div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Role</Label>
+                  <div className="mt-1">
+                    <Badge variant={selectedUser.role === 'moderator' ? 'default' : 'outline'}>
+                      {selectedUser.role}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Location & Bio */}
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium flex items-center">
+                    <MapPin className="mr-1 h-4 w-4" />
+                    Location
+                  </Label>
+                  <p className="text-sm text-muted-foreground mt-1">{selectedUser.location}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Bio</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{selectedUser.bio}</p>
+                </div>
+              </div>
+
+              {/* Activity Stats */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-muted rounded-lg">
+                  <div className="text-2xl font-bold">{selectedUser.posts}</div>
+                  <div className="text-sm text-muted-foreground">Posts</div>
+                </div>
+                <div className="text-center p-4 bg-muted rounded-lg">
+                  <div className="text-2xl font-bold">{selectedUser.totalLikes}</div>
+                  <div className="text-sm text-muted-foreground">Total Likes</div>
+                </div>
+                <div className="text-center p-4 bg-muted rounded-lg">
+                  <div className="text-2xl font-bold">{selectedUser.totalComments}</div>
+                  <div className="text-sm text-muted-foreground">Comments</div>
+                </div>
+              </div>
+
+              {/* Account Details */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium flex items-center">
+                    <Calendar className="mr-1 h-4 w-4" />
+                    Join Date
+                  </Label>
+                  <p className="text-sm text-muted-foreground mt-1">{selectedUser.joinDate}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Last Active</Label>
+                  <p className="text-sm text-muted-foreground mt-1">{selectedUser.lastActive}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setViewProfileModalOpen(false)}>
+              Close
+            </Button>
+            <Button onClick={() => {
+              setViewProfileModalOpen(false);
+              handleEditUser(selectedUser);
+            }}>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit User Modal */}
+      <Dialog open={editUserModalOpen} onOpenChange={setEditUserModalOpen}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Edit User - {selectedUser?.name}</DialogTitle>
+            <DialogDescription>
+              Update user information and settings
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="editUserName">Full Name</Label>
+              <Input
+                id="editUserName"
+                value={editUser.name}
+                onChange={(e) => setEditUser(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Enter full name"
+              />
+            </div>
+            <div>
+              <Label htmlFor="editUserEmail">Email Address</Label>
+              <Input
+                id="editUserEmail"
+                type="email"
+                value={editUser.email}
+                onChange={(e) => setEditUser(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="Enter email address"
+              />
+            </div>
+            <div>
+              <Label htmlFor="editUserRole">Role</Label>
+              <Select value={editUser.role} onValueChange={(value) => setEditUser(prev => ({ ...prev, role: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="moderator">Moderator</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="editUserStatus">Status</Label>
+              <Select value={editUser.status} onValueChange={(value) => setEditUser(prev => ({ ...prev, status: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="suspended">Suspended</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditUserModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleUpdateUser} 
+              disabled={!editUser.name || !editUser.email}
+            >
+              Update User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Add User Modal */}
       <Dialog open={addUserModalOpen} onOpenChange={setAddUserModalOpen}>
