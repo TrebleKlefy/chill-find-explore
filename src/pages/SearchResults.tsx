@@ -1,13 +1,12 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MapPin, Star, Clock, ArrowLeft, Calendar, Utensils, Coffee, Search, Filter, Navigation, Phone, Clock3, ExternalLink } from "lucide-react";
 import SearchBar from "@/components/search/SearchBar";
+import PostDetailsModal from "@/components/posts/PostDetailsModal";
 
 const SearchResults = () => {
   const navigate = useNavigate();
@@ -20,7 +19,7 @@ const SearchResults = () => {
   const [selectedPlace, setSelectedPlace] = useState<any>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-  // Mock search results data
+  // Mock search results data with multiple images
   const mockResults = [
     {
       id: 1,
@@ -30,7 +29,11 @@ const SearchResults = () => {
       distance: '0.3 km',
       rating: 4.8,
       price: '$$',
-      image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=250&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=250&fit=crop',
+        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop',
+        'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=250&fit=crop'
+      ],
       tags: ['Organic', 'Outdoor Seating', 'Vegetarian'],
       address: '123 Garden Street, Downtown',
       phone: '+1 (555) 123-4567',
@@ -45,7 +48,10 @@ const SearchResults = () => {
       distance: '0.8 km',
       rating: 4.6,
       price: '$',
-      image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=250&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=250&fit=crop',
+        'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&h=250&fit=crop'
+      ],
       tags: ['Live Music', 'Bar', 'Evening'],
       address: '456 Music Avenue, Arts District',
       phone: '+1 (555) 234-5678',
@@ -60,7 +66,9 @@ const SearchResults = () => {
       distance: '1.2 km',
       rating: 4.7,
       price: 'Free',
-      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop'
+      ],
       tags: ['Nature', 'Walking', 'Picnic'],
       address: '789 Sunset Boulevard, West Side',
       phone: 'N/A',
@@ -75,7 +83,9 @@ const SearchResults = () => {
       distance: '0.6 km',
       rating: 4.4,
       price: '$',
-      image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=250&fit=crop',
+      images: [
+        'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=250&fit=crop'
+      ],
       tags: ['Street Food', 'Quick Bites', 'Local'],
       address: '321 Food Street, Market District',
       phone: '+1 (555) 345-6789',
@@ -86,7 +96,6 @@ const SearchResults = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    // Simulate API call with search filtering
     setTimeout(() => {
       const filtered = mockResults.filter(item => 
         item.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -114,23 +123,6 @@ const SearchResults = () => {
   const handlePlaceClick = (place: any) => {
     setSelectedPlace(place);
     setIsDetailsOpen(true);
-  };
-
-  const handleGoNow = (coordinates: { lat: number; lng: number }) => {
-    // Create Google Maps URL
-    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${coordinates.lat},${coordinates.lng}`;
-    
-    // Try to open in native maps app first, fallback to web
-    if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
-      const appleUrl = `maps://maps.google.com/maps/dir/?destination=${coordinates.lat},${coordinates.lng}`;
-      window.location.href = appleUrl;
-      // Fallback to Google Maps web if native app doesn't open
-      setTimeout(() => {
-        window.open(googleMapsUrl, '_blank');
-      }, 1000);
-    } else {
-      window.open(googleMapsUrl, '_blank');
-    }
   };
 
   const getTypeInfo = (type: string) => {
@@ -230,6 +222,7 @@ const SearchResults = () => {
             {filteredResults.map((place) => {
               const typeInfo = getTypeInfo(place.type);
               const TypeIcon = typeInfo.icon;
+              const displayImage = place.images && place.images.length > 0 ? place.images[0] : place.image;
 
               return (
                 <Card 
@@ -239,7 +232,7 @@ const SearchResults = () => {
                 >
                   <div className="aspect-video relative overflow-hidden">
                     <img
-                      src={place.image}
+                      src={displayImage}
                       alt={place.title}
                       className="w-full h-full object-cover"
                     />
@@ -255,6 +248,13 @@ const SearchResults = () => {
                         {place.distance}
                       </Badge>
                     </div>
+                    {place.images && place.images.length > 1 && (
+                      <div className="absolute bottom-3 right-3">
+                        <Badge variant="secondary" className="bg-black/50 text-white">
+                          +{place.images.length - 1} more
+                        </Badge>
+                      </div>
+                    )}
                   </div>
 
                   <CardContent className="p-4">
@@ -303,82 +303,11 @@ const SearchResults = () => {
         )}
       </main>
 
-      {/* Details Modal */}
-      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent className="max-w-md">
-          {selectedPlace && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center space-x-2">
-                  <span>{selectedPlace.title}</span>
-                  <div className="flex items-center space-x-1">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm">{selectedPlace.rating}</span>
-                  </div>
-                </DialogTitle>
-              </DialogHeader>
-              
-              <div className="space-y-4">
-                <img
-                  src={selectedPlace.image}
-                  alt={selectedPlace.title}
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-                
-                <p className="text-sm text-muted-foreground">
-                  {selectedPlace.description}
-                </p>
-                
-                <div className="flex flex-wrap gap-1">
-                  {selectedPlace.tags.map((tag: string) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{selectedPlace.address}</span>
-                  </div>
-                  
-                  {selectedPlace.phone !== 'N/A' && (
-                    <div className="flex items-center space-x-2">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{selectedPlace.phone}</span>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center space-x-2">
-                    <Clock3 className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{selectedPlace.hours}</span>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{selectedPlace.distance} away</span>
-                  </div>
-                </div>
-                
-                <div className="flex space-x-2 pt-4">
-                  <Button 
-                    onClick={() => handleGoNow(selectedPlace.coordinates)}
-                    className="flex-1 flex items-center space-x-2"
-                  >
-                    <Navigation className="h-4 w-4" />
-                    <span>Go Now</span>
-                  </Button>
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <ExternalLink className="h-4 w-4" />
-                    <span>Share</span>
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <PostDetailsModal 
+        post={selectedPlace}
+        isOpen={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
+      />
     </div>
   );
 };

@@ -1,11 +1,15 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { MapPin, Calendar, Utensils, Coffee, Heart, MessageCircle, Share } from "lucide-react";
+import PostDetailsModal from "./PostDetailsModal";
 
 const PostFeed = () => {
+  const [selectedPost, setSelectedPost] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const mockPosts = [
     {
       id: 1,
@@ -18,7 +22,17 @@ const PostFeed = () => {
       timeAgo: '2 hours ago',
       likes: 24,
       comments: 8,
-      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&h=300&fit=crop'
+      images: [
+        'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=500&h=300&fit=crop'
+      ],
+      tags: ['Italian', 'Rooftop', 'City Views'],
+      rating: 4.8,
+      price: '$$',
+      phone: '+1 (555) 123-4567',
+      hours: 'Open until 10:00 PM',
+      coordinates: { lat: 40.7128, lng: -74.0060 }
     },
     {
       id: 2,
@@ -31,7 +45,16 @@ const PostFeed = () => {
       timeAgo: '5 hours ago',
       likes: 18,
       comments: 12,
-      image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=300&fit=crop'
+      images: [
+        'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=300&fit=crop',
+        'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&h=300&fit=crop'
+      ],
+      tags: ['Live Music', 'Bar', 'Evening'],
+      rating: 4.6,
+      price: '$',
+      phone: '+1 (555) 234-5678',
+      hours: 'Event starts at 8:00 PM',
+      coordinates: { lat: 40.7589, lng: -73.9851 }
     },
     {
       id: 3,
@@ -44,7 +67,15 @@ const PostFeed = () => {
       timeAgo: '1 day ago',
       likes: 42,
       comments: 15,
-      image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500&h=300&fit=crop'
+      images: [
+        'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500&h=300&fit=crop'
+      ],
+      tags: ['Coffee', 'Garden', 'Quiet'],
+      rating: 4.7,
+      price: '$',
+      phone: '+1 (555) 345-6789',
+      hours: 'Open until 8:00 PM',
+      coordinates: { lat: 40.6892, lng: -74.0445 }
     }
   ];
 
@@ -61,6 +92,11 @@ const PostFeed = () => {
     }
   };
 
+  const handlePostClick = (post: any) => {
+    setSelectedPost(post);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
@@ -72,12 +108,17 @@ const PostFeed = () => {
         {mockPosts.map((post) => {
           const typeInfo = getTypeInfo(post.type);
           const TypeIcon = typeInfo.icon;
+          const displayImage = post.images && post.images.length > 0 ? post.images[0] : post.image;
 
           return (
-            <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card 
+              key={post.id} 
+              className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => handlePostClick(post)}
+            >
               <div className="aspect-video relative overflow-hidden">
                 <img
-                  src={post.image}
+                  src={displayImage}
                   alt={post.title}
                   className="w-full h-full object-cover"
                 />
@@ -87,6 +128,13 @@ const PostFeed = () => {
                     {typeInfo.label}
                   </Badge>
                 </div>
+                {post.images && post.images.length > 1 && (
+                  <div className="absolute top-4 right-4">
+                    <Badge variant="secondary" className="bg-black/50 text-white">
+                      +{post.images.length - 1} more
+                    </Badge>
+                  </div>
+                )}
               </div>
 
               <CardHeader>
@@ -132,6 +180,12 @@ const PostFeed = () => {
           );
         })}
       </div>
+
+      <PostDetailsModal 
+        post={selectedPost}
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </div>
   );
 };
