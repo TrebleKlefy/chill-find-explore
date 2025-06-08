@@ -7,14 +7,17 @@ import LoginForm from "@/components/auth/LoginForm";
 import SignupForm from "@/components/auth/SignupForm";
 import CreatePostForm from "@/components/posts/CreatePostForm";
 import PostFeed from "@/components/posts/PostFeed";
+import MoodSelector from "@/components/discovery/MoodSelector";
+import LocationSuggestions from "@/components/discovery/LocationSuggestions";
 
 const Index = () => {
-  const [currentView, setCurrentView] = useState<'welcome' | 'login' | 'signup' | 'feed' | 'create'>('welcome');
+  const [currentView, setCurrentView] = useState<'welcome' | 'login' | 'signup' | 'feed' | 'create' | 'discover'>('welcome');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
-    setCurrentView('feed');
+    setCurrentView('discover');
   };
 
   if (!isAuthenticated) {
@@ -27,7 +30,7 @@ const Index = () => {
                 Discover Amazing Places
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                Share and discover the best events, restaurants, and chill spots in your area
+                Share and discover the best events, restaurants, and chill spots based on your mood and location
               </p>
               
               <div className="grid md:grid-cols-3 gap-6 mb-12">
@@ -120,6 +123,12 @@ const Index = () => {
             </div>
             <div className="flex items-center space-x-4">
               <Button
+                variant={currentView === 'discover' ? 'default' : 'ghost'}
+                onClick={() => setCurrentView('discover')}
+              >
+                Discover
+              </Button>
+              <Button
                 variant={currentView === 'feed' ? 'default' : 'ghost'}
                 onClick={() => setCurrentView('feed')}
               >
@@ -146,6 +155,15 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        {currentView === 'discover' && (
+          <div className="space-y-8">
+            <MoodSelector 
+              selectedMood={selectedMood}
+              onMoodSelect={setSelectedMood}
+            />
+            <LocationSuggestions selectedMood={selectedMood} />
+          </div>
+        )}
         {currentView === 'feed' && <PostFeed />}
         {currentView === 'create' && <CreatePostForm onSuccess={() => setCurrentView('feed')} />}
       </main>
