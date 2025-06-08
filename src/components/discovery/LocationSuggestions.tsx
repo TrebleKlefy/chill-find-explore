@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,6 @@ const LocationSuggestions = ({ selectedMood }: LocationSuggestionsProps) => {
       type: 'restaurant',
       title: 'Cozy Italian Bistro',
       description: 'Authentic Italian cuisine in a warm, inviting atmosphere.',
-      image: 'https://images.unsplash.com/photo-1551782450-a2132b4ba212?w=300&h=200&fit=crop',
       images: [
         'https://images.unsplash.com/photo-1551782450-a2132b4ba212?w=300&h=200&fit=crop',
         'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=300&h=200&fit=crop'
@@ -34,7 +34,6 @@ const LocationSuggestions = ({ selectedMood }: LocationSuggestionsProps) => {
       type: 'chill',
       title: 'Tranquil Tea Garden',
       description: 'A serene escape with a wide selection of herbal teas.',
-      image: 'https://images.unsplash.com/photo-1497900301285-9ac396b9caaa?w=300&h=200&fit=crop',
       images: [
         'https://images.unsplash.com/photo-1497900301285-9ac396b9caaa?w=300&h=200&fit=crop',
         'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&h=200&fit=crop'
@@ -49,7 +48,6 @@ const LocationSuggestions = ({ selectedMood }: LocationSuggestionsProps) => {
       type: 'event',
       title: 'Energetic Dance Club',
       description: 'Experience the vibrant nightlife with top DJs and dance music.',
-      image: 'https://images.unsplash.com/photo-1541424427-059903cb3f15?w=300&h=200&fit=crop',
       images: [
         'https://images.unsplash.com/photo-1541424427-059903cb3f15?w=300&h=200&fit=crop',
         'https://images.unsplash.com/photo-1519162842558-59bd58ca5c98?w=300&h=200&fit=crop'
@@ -131,7 +129,7 @@ const LocationSuggestions = ({ selectedMood }: LocationSuggestionsProps) => {
         {suggestions.map((place) => {
           const typeInfo = getTypeInfo(place.type);
           const TypeIcon = typeInfo.icon;
-          const displayImage = place.images && place.images.length > 0 ? place.images[0] : place.image;
+          const displayImage = place.images && place.images.length > 0 ? place.images[0] : '';
 
           return (
             <Card 
