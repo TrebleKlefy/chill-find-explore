@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Star, Clock, ArrowLeft, Calendar, Utensils, Coffee } from "lucide-react";
+import { MapPin, Star, Clock, ArrowLeft, Calendar, Utensils, Coffee, Search } from "lucide-react";
 import SearchBar from "@/components/search/SearchBar";
 
 const SearchResults = () => {
