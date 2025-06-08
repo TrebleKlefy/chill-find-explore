@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,13 +7,14 @@ import LoginForm from "@/components/auth/LoginForm";
 import SignupForm from "@/components/auth/SignupForm";
 import CreatePostForm from "@/components/posts/CreatePostForm";
 import PostFeed from "@/components/posts/PostFeed";
+import MyPosts from "@/components/posts/MyPosts";
 import MoodSelector from "@/components/discovery/MoodSelector";
 import LocationSuggestions from "@/components/discovery/LocationSuggestions";
 import SearchBar from "@/components/search/SearchBar";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [currentView, setCurrentView] = useState<'welcome' | 'login' | 'signup' | 'feed' | 'create' | 'discover'>('welcome');
+  const [currentView, setCurrentView] = useState<'welcome' | 'login' | 'signup' | 'feed' | 'create' | 'discover' | 'my-posts'>('welcome');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
@@ -169,6 +169,12 @@ const Index = () => {
                 Create Post
               </Button>
               <Button
+                variant={currentView === 'my-posts' ? 'default' : 'ghost'}
+                onClick={() => setCurrentView('my-posts')}
+              >
+                My Posts
+              </Button>
+              <Button
                 variant="outline"
                 onClick={() => {
                   setIsAuthenticated(false);
@@ -194,6 +200,7 @@ const Index = () => {
         )}
         {currentView === 'feed' && <PostFeed />}
         {currentView === 'create' && <CreatePostForm onSuccess={() => setCurrentView('feed')} />}
+        {currentView === 'my-posts' && <MyPosts />}
       </main>
     </div>
   );
