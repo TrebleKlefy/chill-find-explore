@@ -4,7 +4,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Star, Clock, ArrowLeft, Calendar, Utensils, Coffee, Search } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { MapPin, Star, Clock, ArrowLeft, Calendar, Utensils, Coffee, Search, Filter, Navigation, Phone, Clock3, ExternalLink } from "lucide-react";
 import SearchBar from "@/components/search/SearchBar";
 
 const SearchResults = () => {
@@ -12,7 +14,11 @@ const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
   const [results, setResults] = useState<any[]>([]);
+  const [filteredResults, setFilteredResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedFilter, setSelectedFilter] = useState<string>('all');
+  const [selectedPlace, setSelectedPlace] = useState<any>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   // Mock search results data
   const mockResults = [
@@ -25,7 +31,11 @@ const SearchResults = () => {
       rating: 4.8,
       price: '$$',
       image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=250&fit=crop',
-      tags: ['Organic', 'Outdoor Seating', 'Vegetarian']
+      tags: ['Organic', 'Outdoor Seating', 'Vegetarian'],
+      address: '123 Garden Street, Downtown',
+      phone: '+1 (555) 123-4567',
+      hours: 'Open until 10:00 PM',
+      coordinates: { lat: 40.7128, lng: -74.0060 }
     },
     {
       id: 2,
@@ -36,7 +46,11 @@ const SearchResults = () => {
       rating: 4.6,
       price: '$',
       image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=250&fit=crop',
-      tags: ['Live Music', 'Bar', 'Evening']
+      tags: ['Live Music', 'Bar', 'Evening'],
+      address: '456 Music Avenue, Arts District',
+      phone: '+1 (555) 234-5678',
+      hours: 'Event starts at 8:00 PM',
+      coordinates: { lat: 40.7589, lng: -73.9851 }
     },
     {
       id: 3,
@@ -47,7 +61,11 @@ const SearchResults = () => {
       rating: 4.7,
       price: 'Free',
       image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop',
-      tags: ['Nature', 'Walking', 'Picnic']
+      tags: ['Nature', 'Walking', 'Picnic'],
+      address: '789 Sunset Boulevard, West Side',
+      phone: 'N/A',
+      hours: 'Open 24 hours',
+      coordinates: { lat: 40.6892, lng: -74.0445 }
     },
     {
       id: 4,
@@ -58,7 +76,11 @@ const SearchResults = () => {
       rating: 4.4,
       price: '$',
       image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=250&fit=crop',
-      tags: ['Street Food', 'Quick Bites', 'Local']
+      tags: ['Street Food', 'Quick Bites', 'Local'],
+      address: '321 Food Street, Market District',
+      phone: '+1 (555) 345-6789',
+      hours: 'Open until 11:00 PM',
+      coordinates: { lat: 40.7282, lng: -73.7949 }
     }
   ];
 
@@ -72,12 +94,43 @@ const SearchResults = () => {
         item.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
       );
       setResults(filtered);
+      setFilteredResults(filtered);
       setIsLoading(false);
     }, 800);
   }, [query]);
 
+  useEffect(() => {
+    if (selectedFilter === 'all') {
+      setFilteredResults(results);
+    } else {
+      setFilteredResults(results.filter(item => item.type === selectedFilter));
+    }
+  }, [selectedFilter, results]);
+
   const handleNewSearch = (newQuery: string) => {
     navigate(`/search?q=${encodeURIComponent(newQuery)}`);
+  };
+
+  const handlePlaceClick = (place: any) => {
+    setSelectedPlace(place);
+    setIsDetailsOpen(true);
+  };
+
+  const handleGoNow = (coordinates: { lat: number; lng: number }) => {
+    // Create Google Maps URL
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${coordinates.lat},${coordinates.lng}`;
+    
+    // Try to open in native maps app first, fallback to web
+    if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
+      const appleUrl = `maps://maps.google.com/maps/dir/?destination=${coordinates.lat},${coordinates.lng}`;
+      window.location.href = appleUrl;
+      // Fallback to Google Maps web if native app doesn't open
+      setTimeout(() => {
+        window.open(googleMapsUrl, '_blank');
+      }, 1000);
+    } else {
+      window.open(googleMapsUrl, '_blank');
+    }
   };
 
   const getTypeInfo = (type: string) => {
@@ -92,6 +145,13 @@ const SearchResults = () => {
         return { icon: MapPin, label: 'Place', color: 'bg-gray-100 text-gray-800' };
     }
   };
+
+  const filterOptions = [
+    { value: 'all', label: 'All Places' },
+    { value: 'restaurant', label: 'Restaurants' },
+    { value: 'event', label: 'Events' },
+    { value: 'chill', label: 'Chill Spots' }
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -112,7 +172,30 @@ const SearchResults = () => {
               <h1 className="text-xl font-bold">Discover</h1>
             </div>
           </div>
-          <SearchBar onSearch={handleNewSearch} />
+          <div className="flex space-x-4 items-center">
+            <div className="flex-1">
+              <SearchBar onSearch={handleNewSearch} />
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center space-x-2">
+                  <Filter className="h-4 w-4" />
+                  <span>{filterOptions.find(opt => opt.value === selectedFilter)?.label}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white border shadow-md">
+                {filterOptions.map((option) => (
+                  <DropdownMenuItem
+                    key={option.value}
+                    onClick={() => setSelectedFilter(option.value)}
+                    className="cursor-pointer hover:bg-gray-100"
+                  >
+                    {option.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
 
@@ -122,7 +205,7 @@ const SearchResults = () => {
             {query ? `Results for "${query}"` : 'Search Results'}
           </h2>
           <p className="text-muted-foreground">
-            {isLoading ? 'Searching...' : `${results.length} places found near you`}
+            {isLoading ? 'Searching...' : `${filteredResults.length} places found near you`}
           </p>
         </div>
 
@@ -142,14 +225,18 @@ const SearchResults = () => {
               </Card>
             ))}
           </div>
-        ) : results.length > 0 ? (
+        ) : filteredResults.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {results.map((place) => {
+            {filteredResults.map((place) => {
               const typeInfo = getTypeInfo(place.type);
               const TypeIcon = typeInfo.icon;
 
               return (
-                <Card key={place.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                <Card 
+                  key={place.id} 
+                  className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => handlePlaceClick(place)}
+                >
                   <div className="aspect-video relative overflow-hidden">
                     <img
                       src={place.image}
@@ -215,6 +302,83 @@ const SearchResults = () => {
           </div>
         )}
       </main>
+
+      {/* Details Modal */}
+      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+        <DialogContent className="max-w-md">
+          {selectedPlace && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center space-x-2">
+                  <span>{selectedPlace.title}</span>
+                  <div className="flex items-center space-x-1">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <span className="text-sm">{selectedPlace.rating}</span>
+                  </div>
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                <img
+                  src={selectedPlace.image}
+                  alt={selectedPlace.title}
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+                
+                <p className="text-sm text-muted-foreground">
+                  {selectedPlace.description}
+                </p>
+                
+                <div className="flex flex-wrap gap-1">
+                  {selectedPlace.tags.map((tag: string) => (
+                    <Badge key={tag} variant="outline" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{selectedPlace.address}</span>
+                  </div>
+                  
+                  {selectedPlace.phone !== 'N/A' && (
+                    <div className="flex items-center space-x-2">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{selectedPlace.phone}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center space-x-2">
+                    <Clock3 className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{selectedPlace.hours}</span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{selectedPlace.distance} away</span>
+                  </div>
+                </div>
+                
+                <div className="flex space-x-2 pt-4">
+                  <Button 
+                    onClick={() => handleGoNow(selectedPlace.coordinates)}
+                    className="flex-1 flex items-center space-x-2"
+                  >
+                    <Navigation className="h-4 w-4" />
+                    <span>Go Now</span>
+                  </Button>
+                  <Button variant="outline" className="flex items-center space-x-2">
+                    <ExternalLink className="h-4 w-4" />
+                    <span>Share</span>
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

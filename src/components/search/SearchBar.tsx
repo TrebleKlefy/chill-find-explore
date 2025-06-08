@@ -2,14 +2,20 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin } from "lucide-react";
+import { Search } from "lucide-react";
+import LocationButton from "@/components/location/LocationButton";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
+  showLocationButton?: boolean;
   placeholder?: string;
 }
 
-const SearchBar = ({ onSearch, placeholder = "Search events, restaurants, chill spots..." }: SearchBarProps) => {
+const SearchBar = ({ 
+  onSearch, 
+  showLocationButton = true,
+  placeholder = "Search for restaurants, events, or places to chill..."
+}: SearchBarProps) => {
   const [query, setQuery] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -19,29 +25,41 @@ const SearchBar = ({ onSearch, placeholder = "Search events, restaurants, chill 
     }
   };
 
+  const handleLocationDetected = (location: { lat: number; lng: number; address: string }) => {
+    // For now, we'll search for places near the detected location
+    // In a real app, this would update the search context with the user's location
+    console.log("Location detected:", location);
+    setQuery(`Near ${location.address}`);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-muted-foreground" />
+    <div className="space-y-3">
+      <form onSubmit={handleSubmit} className="flex space-x-2">
+        <div className="flex-1 relative">
+          <Input
+            type="text"
+            placeholder={placeholder}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="pr-10"
+          />
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         </div>
-        <Input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={placeholder}
-          className="pl-10 pr-20 h-12 text-base rounded-full border-2 focus:border-blue-500 focus:ring-blue-500"
-        />
-        <Button
-          type="submit"
-          size="sm"
-          className="absolute right-1 top-1 h-10 px-6 rounded-full bg-blue-600 hover:bg-blue-700"
-          disabled={!query.trim()}
-        >
+        <Button type="submit" disabled={!query.trim()}>
           Search
         </Button>
-      </div>
-    </form>
+      </form>
+      
+      {showLocationButton && (
+        <div className="flex justify-center">
+          <LocationButton
+            onLocationDetected={handleLocationDetected}
+            variant="ghost"
+            size="sm"
+          />
+        </div>
+      )}
+    </div>
   );
 };
 
