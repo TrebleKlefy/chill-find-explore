@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Calendar, Utensils, Coffee } from "lucide-react";
@@ -9,8 +9,10 @@ import CreatePostForm from "@/components/posts/CreatePostForm";
 import PostFeed from "@/components/posts/PostFeed";
 import MoodSelector from "@/components/discovery/MoodSelector";
 import LocationSuggestions from "@/components/discovery/LocationSuggestions";
+import SearchBar from "@/components/search/SearchBar";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<'welcome' | 'login' | 'signup' | 'feed' | 'create' | 'discover'>('welcome');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
@@ -18,6 +20,10 @@ const Index = () => {
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
     setCurrentView('discover');
+  };
+
+  const handleSearch = (query: string) => {
+    navigate(`/search?q=${encodeURIComponent(query)}`);
   };
 
   if (!isAuthenticated) {
@@ -32,6 +38,27 @@ const Index = () => {
               <p className="text-xl text-muted-foreground mb-8">
                 Share and discover the best events, restaurants, and chill spots based on your mood and location
               </p>
+
+              {/* Search Bar for Public Users */}
+              <div className="mb-12">
+                <SearchBar onSearch={handleSearch} />
+                <p className="text-sm text-muted-foreground mt-2">
+                  Search without signing up • Find places near you
+                </p>
+              </div>
+
+              {/* Mood Selector for Public Users */}
+              <div className="mb-12">
+                <MoodSelector 
+                  selectedMood={selectedMood}
+                  onMoodSelect={setSelectedMood}
+                />
+              </div>
+
+              {/* Location Suggestions for Public Users */}
+              <div className="mb-12">
+                <LocationSuggestions selectedMood={selectedMood} />
+              </div>
               
               <div className="grid md:grid-cols-3 gap-6 mb-12">
                 <Card className="hover:shadow-lg transition-shadow">
