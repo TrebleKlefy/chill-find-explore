@@ -3,10 +3,18 @@ const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const placesRoutes = require('./routes/places');
+const { errorHandler } = require('./middleware/errorHandler');
+
+// Import routes
+const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
-const eventRoutes = require('./routes/events');
-const restaurantRoutes = require('./routes/restaurants');
+const placesRoutes = require('./routes/places');
+const eventsRoutes = require('./routes/events');
+const restaurantsRoutes = require('./routes/restaurants');
+const postsRoutes = require('./routes/posts');
+const searchRoutes = require('./routes/search');
+const discoveryRoutes = require('./routes/discovery');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -25,14 +33,22 @@ app.use(limiter);
 app.use(morgan('dev'));
 
 // Body parsing
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Static files for uploads
+app.use('/uploads', express.static('uploads'));
 
 // Routes
-app.use('/api/places', placesRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/restaurants', restaurantRoutes);
+app.use('/api/places', placesRoutes);
+app.use('/api/events', eventsRoutes);
+app.use('/api/restaurants', restaurantsRoutes);
+app.use('/api/posts', postsRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/discovery', discoveryRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -40,28 +56,14 @@ app.get('/health', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  
-  if (err.name === 'ValidationError') {
-    return res.status(400).json({
-      message: 'Validation Error',
-      errors: Object.values(err.errors).map(e => e.message)
-    });
-  }
-
-  if (err.name === 'JsonWebTokenError') {
-    return res.status(401).json({ message: 'Invalid token' });
-  }
-
-  res.status(err.status || 500).json({
-    message: err.message || 'Something went wrong!'
-  });
-});
+app.use(errorHandler);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+  res.status(404).json({ 
+    success: false,
+    message: 'Route not found' 
+  });
 });
 
 module.exports = app; 

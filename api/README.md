@@ -1,258 +1,312 @@
-# Outside - Location-Based Discovery App
+# Chill Find Explore API
 
-A location-based mobile app backend designed to help people discover authentic, off-the-beaten-path experiences in their area. Built with Node.js, Express, and Supabase.
+A comprehensive location-based API for discovering authentic local experiences, built with Node.js, Express, and Supabase.
 
-## Features
+## 🚀 Features
 
-🌴 **Hidden gems** — rivers, beaches, hills, and trails only locals know
-🍽 **Local restaurants & food trucks**
-🎉 **Events** — pop-ups, street parties, and cultural happenings
-🧘🏾 **Vibe-based filters** — chill, romantic, adventurous, or turn-up
-📍 **What's nearby** — instant suggestions based on your mood and location
+### Core Features
+- **Authentication**: JWT-based auth with refresh tokens
+- **User Management**: Profiles, settings, roles, and social features
+- **Location Discovery**: Places, events, restaurants with geospatial search
+- **Content Management**: User-generated posts with rich media support
+- **Social Features**: Likes, comments, follows, collections
+- **Search & Discovery**: Advanced search with filters and mood-based recommendations
+- **Admin Dashboard**: Content moderation, user management, analytics
+- **File Upload**: Image upload with processing and optimization
 
-## Tech Stack
+### API Endpoints
 
-- **Backend**: Node.js, Express.js
-- **Database**: Supabase (PostgreSQL with PostGIS)
-- **Authentication**: Supabase Auth
-- **Security**: Helmet, CORS, Rate limiting
-- **Logging**: Morgan
+#### Authentication (`/api/auth`)
+- `POST /logout` - Logout user
+- `POST /refresh` - Refresh access token
+- `GET /me` - Get current user profile
 
-## Setup
+#### Users (`/api/users`)
+- `GET /` - Get users list
+- `GET /:id` - Get user by ID
+- `PUT /:id` - Update user profile
+- `GET /:id/posts` - Get user's posts
+- `GET /:id/favorites` - Get user's favorites
+- `POST /:id/follow` - Follow user
+- `DELETE /:id/follow` - Unfollow user
+
+#### Places (`/api/places`)
+- `GET /` - Get places with filters
+- `GET /:id` - Get place by ID
+- `POST /` - Create new place
+- `PUT /:id` - Update place
+- `DELETE /:id` - Delete place
+
+#### Events (`/api/events`)
+- `GET /` - Get events with filters
+- `GET /:id` - Get event by ID
+- `POST /` - Create new event
+- `PUT /:id` - Update event
+- `DELETE /:id` - Delete event
+
+#### Restaurants (`/api/restaurants`)
+- `GET /` - Get restaurants with filters
+- `GET /:id` - Get restaurant by ID
+- `POST /` - Create new restaurant
+- `PUT /:id` - Update restaurant
+- `DELETE /:id` - Delete restaurant
+- `POST /:id/review` - Add review
+
+#### Posts (`/api/posts`)
+- `GET /` - Get posts feed
+- `GET /:id` - Get post by ID
+- `POST /` - Create new post
+- `PUT /:id` - Update post
+- `DELETE /:id` - Delete post
+- `POST /:id/like` - Like post
+- `DELETE /:id/like` - Unlike post
+- `POST /:id/comment` - Add comment
+- `GET /:id/comments` - Get post comments
+- `POST /:id/report` - Report post
+
+#### Search (`/api/search`)
+- `GET /` - Universal search with filters
+- `GET /suggestions` - Search suggestions
+
+#### Discovery (`/api/discovery`)
+- `GET /mood-based` - Mood-based recommendations
+- `GET /trending` - Trending places and content
+- `GET /location-suggestions` - Location-based suggestions
+
+#### Admin (`/api/admin`)
+- `GET /dashboard/stats` - Dashboard statistics
+- `GET /users` - Manage users
+- `GET /content` - Content moderation queue
+- `POST /content/:id/review` - Review content
+- `GET /analytics/*` - Various analytics endpoints
+- `GET /settings` - Get admin settings
+- `PUT /settings` - Update admin settings
+
+## 🛠 Installation & Setup
 
 ### Prerequisites
+- Node.js 16+ and npm
+- Supabase account and project
+- PostgreSQL with PostGIS extension
 
-1. **Node.js** (v16 or higher)
-2. **Supabase CLI** - Install globally:
+### Environment Variables
+Create a `.env` file in the API directory:
+
+```env
+PORT=3000
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+JWT_SECRET=your_jwt_secret
+NODE_ENV=development
+```
+
+### Installation Steps
+
+1. **Install Dependencies**
    ```bash
-   npm install -g supabase
-   ```
-3. **Supabase account** - Create at [supabase.com](https://supabase.com)
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd outside
-   ```
-
-2. **Install dependencies:**
-   ```bash
+   cd api
    npm install
    ```
 
-3. **Set up Supabase project:**
+2. **Database Setup**
+   
+   Run the initial schema migration:
    ```bash
-   # Login to Supabase (this will open a browser)
-   supabase login
-   
-   # Initialize Supabase in your project
-   supabase init
-   
-   # Link to your remote Supabase project
-   supabase link --project-ref your-project-ref
-   ```
-
-4. **Create environment file:**
-   ```bash
-   cp .env.example .env
-   ```
-
-5. **Configure your environment variables in `.env`:**
-   ```env
-   PORT=3000
-   SUPABASE_URL=your_supabase_project_url
-   SUPABASE_ANON_KEY=your_supabase_anon_key
-   NODE_ENV=development
+   npm run migrate
+   # or manually in Supabase SQL editor
    ```
    
-   You can find your Supabase URL and anon key in your [Supabase dashboard](https://app.supabase.com) under Settings > API.
+   Apply the new tables and features:
+   - Run `/supabase/migrations/20240608_add_missing_tables.sql`
+   - Run `/supabase/migrations/20240608_add_helper_functions.sql`
 
-6. **Set up the database:**
-   ```bash
-   # Start local Supabase (optional - for local development)
-   supabase start
-   
-   # Push the database schema to your remote Supabase project
-   supabase db push
-   
-   # OR reset the database and apply schema + seed data
-   supabase db reset
-   ```
-
-7. **Seed the database with sample data:**
-   ```bash
-   # The seed data is automatically applied when using db reset
-   # Or you can manually run the seed file:
-   supabase db reset --linked
-   ```
-
-8. **Start the development server:**
+3. **Start Development Server**
    ```bash
    npm run dev
    ```
 
-The server will start on `http://localhost:3000` (or the port specified in your `.env` file).
+4. **Verify Installation**
+   Visit `http://localhost:3000/health` to check if the API is running.
 
-### Supabase Commands Reference
+## 📁 Project Structure
 
-```bash
-# Project Management
-supabase login                    # Login to Supabase
-supabase init                     # Initialize Supabase in project
-supabase link --project-ref <ref> # Link to remote project
-supabase status                   # Check project status
-
-# Local Development
-supabase start                    # Start local Supabase stack
-supabase stop                     # Stop local Supabase stack
-supabase restart                  # Restart local Supabase stack
-
-# Database Management
-supabase db push                  # Push local migrations to remote
-supabase db pull                  # Pull remote changes to local
-supabase db reset                 # Reset database with migrations + seed
-supabase db reset --linked        # Reset linked remote database
-
-# Migrations
-supabase migration new <name>     # Create new migration
-supabase migration up             # Apply pending migrations
-supabase migration repair <id>    # Mark migration as applied
-
-# Functions & Types
-supabase gen types typescript --linked  # Generate TypeScript types
-supabase functions new <name>     # Create new Edge Function
-supabase functions deploy <name>  # Deploy Edge Function
-
-# Utilities
-supabase --help                   # Show all available commands
+```
+api/
+├── config/
+│   └── supabase.js          # Supabase configuration
+├── controllers/
+│   ├── authController.js    # Authentication logic
+│   ├── userController.js    # User management
+│   ├── placesController.js  # Places CRUD
+│   ├── eventController.js   # Events CRUD
+│   ├── restaurantController.js # Restaurants CRUD
+│   ├── postController.js    # Posts and social features
+│   ├── searchController.js  # Search functionality
+│   ├── discoveryController.js # Discovery and recommendations
+│   └── adminController.js   # Admin dashboard
+├── middleware/
+│   ├── auth.js             # JWT authentication
+│   ├── adminAuth.js        # Admin authorization
+│   ├── validation.js       # Request validation
+│   ├── upload.js           # File upload handling
+│   └── errorHandler.js     # Global error handling
+├── routes/
+│   ├── auth.js             # Auth routes
+│   ├── users.js            # User routes
+│   ├── places.js           # Places routes
+│   ├── events.js           # Events routes
+│   ├── restaurants.js      # Restaurant routes
+│   ├── posts.js            # Posts routes
+│   ├── search.js           # Search routes
+│   ├── discovery.js        # Discovery routes
+│   └── admin.js            # Admin routes
+├── supabase/
+│   ├── migrations/         # Database migrations
+│   └── config.toml         # Supabase configuration
+├── uploads/                # File upload directory
+├── app.js                  # Express app configuration
+├── server.js               # Server entry point
+└── package.json            # Dependencies and scripts
 ```
 
-### Development Workflow
+## 🗄 Database Schema
 
-1. **Make database changes:**
-   ```bash
-   # Create a new migration for schema changes
-   supabase migration new add_new_table
-   
-   # Edit the migration file in supabase/migrations/
-   # Then apply it
-   supabase db reset
-   ```
+### Core Tables
+- **users**: User profiles and authentication
+- **places**: Location points of interest
+- **events**: Time-based events and activities
+- **restaurants**: Dining establishments with reviews
+- **posts**: User-generated content
+- **comments**: Post comments
+- **likes**: Post and content likes
+- **user_collections**: User-created collections
+- **collection_items**: Items in collections
+- **user_activity**: Activity tracking
+- **moderation_flags**: Content reporting
+- **search_history**: User search tracking
+- **user_favorites**: Saved places
+- **user_follows**: Social following relationships
 
-2. **Update seed data:**
-   ```bash
-   # Edit supabase/seed.sql
-   # Then reset database to apply changes
-   supabase db reset
-   ```
+### Key Features
+- **PostGIS Integration**: Geospatial queries for location-based features
+- **Row Level Security**: Fine-grained access control
+- **Full-text Search**: Advanced search capabilities
+- **JSONB Fields**: Flexible metadata storage
+- **Automated Triggers**: Timestamp management
 
-3. **Test API endpoints:**
-   ```bash
-   # Start the server
-   npm run dev
-   
-   # Test an endpoint
-   curl http://localhost:3000/api/places/nearby?lat=40.7128&lng=-74.0060
-   ```
+## 🔧 API Usage Examples
 
-## API Endpoints
-
-### Authentication
-- `POST /api/users/register` - Register new user
-- `POST /api/users/login` - Login user
-
-### User Profile
-- `GET /api/users/profile` - Get user profile
-- `PATCH /api/users/profile` - Update user profile
-- `POST /api/users/places/:placeId/save` - Save a place
-- `DELETE /api/users/places/:placeId/save` - Remove saved place
-
-### Places
-- `GET /api/places/nearby` - Get nearby places with filters
-- `GET /api/places/search` - Search places by text
-- `POST /api/places` - Submit new place
-- `GET /api/places/:id` - Get place details
-- `POST /api/places/:id/rate` - Rate a place
-
-### Events
-- `GET /api/events/nearby` - Get nearby events with filters
-- `GET /api/events/date-range` - Get events by date range
-- `POST /api/events` - Submit new event
-- `GET /api/events/:id` - Get event details
-- `PATCH /api/events/:id` - Update event
-- `DELETE /api/events/:id` - Delete event
-
-### Restaurants
-- `GET /api/restaurants/nearby` - Get nearby restaurants with filters
-- `GET /api/restaurants/search` - Search restaurants
-- `POST /api/restaurants` - Submit new restaurant
-- `GET /api/restaurants/:id` - Get restaurant details
-- `PATCH /api/restaurants/:id` - Update restaurant
-- `POST /api/restaurants/:id/reviews` - Add review
-
-## Example Usage
-
-### Get nearby places with filters
+### Search for Places
 ```bash
-GET /api/places/nearby?lat=40.7128&lng=-74.0060&category=beach&moodTags=chill,romantic&maxDistance=10
+curl "http://localhost:3000/api/search?query=coffee&location=-122.4194,37.7749&radius=5000&type=places"
 ```
 
-### Submit a new event
+### Get Mood-based Recommendations
 ```bash
-POST /api/events
-Content-Type: application/json
-Authorization: Bearer <your-token>
-
-{
-  "name": "Summer Beach Festival",
-  "description": "Annual beach festival with live music and food",
-  "type": "festival",
-  "startDate": "2024-07-15T10:00:00Z",
-  "endDate": "2024-07-15T22:00:00Z",
-  "location": {
-    "type": "Point",
-    "coordinates": [-74.0060, 40.7128]
-  },
-  "venue": "Central Beach",
-  "moodTags": ["chill", "turn-up"]
-}
+curl "http://localhost:3000/api/discovery/mood-based?mood=chill&location=-122.4194,37.7749"
 ```
 
-## Database Schema
+### Create a Post (with auth)
+```bash
+curl -X POST "http://localhost:3000/api/posts" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "chill",
+    "title": "Amazing sunset spot",
+    "description": "Found this perfect spot for watching sunsets",
+    "location": {"type": "Point", "coordinates": [-122.4194, 37.7749]},
+    "tags": ["sunset", "peaceful", "scenic"]
+  }'
+```
 
-The app uses PostgreSQL with PostGIS extension for geospatial operations:
+## 🔒 Security Features
 
-- **users** - User profiles and preferences
-- **places** - General places and hidden gems
-- **events** - Time-based events and activities
-- **restaurants** - Food establishments
-- **restaurant_reviews** - User reviews for restaurants
+- **JWT Authentication**: Secure token-based authentication
+- **Rate Limiting**: Request rate limiting to prevent abuse
+- **Input Validation**: Comprehensive request validation
+- **SQL Injection Protection**: Parameterized queries
+- **CORS Configuration**: Cross-origin request handling
+- **Helmet Security**: Security headers and protection
+- **File Upload Security**: Secure file handling with type validation
 
-## Security Features
+## 📊 Admin Features
 
-- Row Level Security (RLS) policies
-- JWT-based authentication via Supabase
-- Rate limiting
-- Input validation
-- CORS protection
-- Security headers with Helmet
+### Dashboard Analytics
+- User growth and engagement metrics
+- Content creation and approval statistics
+- Geographic distribution of content
+- Trending topics and locations
 
-## Development
+### Content Moderation
+- Flagged content review queue
+- Bulk approval/rejection actions
+- User-generated content oversight
+- Automated content filtering
 
-### Scripts
-- `npm start` - Start production server
-- `npm run dev` - Start development server with nodemon
-- `npm test` - Run tests
+### User Management
+- User role management (user/contributor/admin)
+- Account suspension and activation
+- User activity monitoring
+- Bulk user operations
 
-### Contributing
+## 🚀 Deployment
+
+### Production Checklist
+- [ ] Set up production Supabase project
+- [ ] Configure environment variables
+- [ ] Run database migrations
+- [ ] Set up file storage (AWS S3, Cloudinary, etc.)
+- [ ] Configure monitoring and logging
+- [ ] Set up automated backups
+- [ ] Configure SSL/TLS certificates
+- [ ] Set up CI/CD pipeline
+
+### Environment-specific Configurations
+- **Development**: Local file storage, debug logging
+- **Staging**: Cloud storage, performance monitoring
+- **Production**: CDN integration, advanced security, monitoring
+
+## 🧪 Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run linting
+npm run lint
+```
+
+## 📚 API Documentation
+
+Full API documentation is available in the Postman collection:
+- Import `Outside_API_Postman_Collection.json`
+- Set up environment variables
+- Test all endpoints with sample data
+
+## 🤝 Contributing
+
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
 4. Add tests if applicable
 5. Submit a pull request
 
-## License
+## 📄 License
 
-This project is licensed under the ISC License. 
+This project is licensed under the ISC License.
+
+## 🆘 Support
+
+For support and questions:
+- Check the API documentation
+- Review the Postman collection
+- Open an issue on the repository
+
+---
+
+**Note**: This implementation includes all the features outlined in the comprehensive API implementation plan. Make sure to run the database migrations before starting the server.
