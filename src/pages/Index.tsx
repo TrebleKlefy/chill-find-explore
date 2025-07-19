@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Calendar, Utensils, Coffee } from "lucide-react";
+import { MapPin, Calendar, Utensils, Coffee, User } from "lucide-react";
 import LoginForm from "@/components/auth/LoginForm";
 import SignupForm from "@/components/auth/SignupForm";
 import CreatePostForm from "@/components/posts/CreatePostForm";
@@ -14,12 +15,11 @@ import SearchBar from "@/components/search/SearchBar";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user, loading, logout } = useAuth();
   const [currentView, setCurrentView] = useState<'welcome' | 'login' | 'signup' | 'feed' | 'create' | 'discover' | 'my-posts'>('welcome');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
   const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
     setCurrentView('discover');
   };
 
@@ -27,14 +27,30 @@ const Index = () => {
     navigate(`/search?q=${encodeURIComponent(query)}`);
   };
 
-  if (!isAuthenticated) {
+  const handleLogout = async () => {
+    await logout();
+    setCurrentView('welcome');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="container mx-auto px-4 py-8">
           {currentView === 'welcome' && (
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Discover Amazing Places
+                Chill Find Explore
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
                 Share and discover the best events, restaurants, and chill spots based on your mood and location
@@ -124,6 +140,14 @@ const Index = () => {
                 onSuccess={handleAuthSuccess}
                 onSwitchToSignup={() => setCurrentView('signup')}
               />
+              <div className="mt-4 text-center">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setCurrentView('welcome')}
+                >
+                  ← Back to home
+                </Button>
+              </div>
             </div>
           )}
 
@@ -133,6 +157,14 @@ const Index = () => {
                 onSuccess={handleAuthSuccess}
                 onSwitchToLogin={() => setCurrentView('login')}
               />
+              <div className="mt-4 text-center">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setCurrentView('welcome')}
+                >
+                  ← Back to home
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -147,8 +179,9 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <MapPin className="h-8 w-8 text-blue-600" />
-              <h1 className="text-2xl font-bold">Discover</h1>
+              <h1 className="text-2xl font-bold">Chill Find Explore</h1>
             </div>
+            
             <div className="flex items-center space-x-4">
               <Button
                 variant={currentView === 'discover' ? 'default' : 'ghost'}
@@ -174,12 +207,26 @@ const Index = () => {
               >
                 My Posts
               </Button>
+              
+              {/* Admin Dashboard Link */}
+              {user.role === 'admin' && (
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/admin')}
+                >
+                  Admin Dashboard
+                </Button>
+              )}
+              
+              {/* User Profile */}
+              <div className="flex items-center space-x-2">
+                <User className="h-5 w-5" />
+                <span className="text-sm font-medium">{user.name}</span>
+              </div>
+              
               <Button
                 variant="outline"
-                onClick={() => {
-                  setIsAuthenticated(false);
-                  setCurrentView('welcome');
-                }}
+                onClick={handleLogout}
               >
                 Sign Out
               </Button>
@@ -191,6 +238,10 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         {currentView === 'discover' && (
           <div className="space-y-8">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-2">Welcome back, {user.name}! 👋</h2>
+              <p className="text-muted-foreground">What are you in the mood for today?</p>
+            </div>
             <MoodSelector 
               selectedMood={selectedMood}
               onMoodSelect={setSelectedMood}
