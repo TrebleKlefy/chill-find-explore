@@ -1,0 +1,459 @@
+{
+  "info": {
+    "name": "Outside API Collection",
+    "description": "Complete API collection for the Outside location-based discovery app",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Places",
+      "item": [
+        {
+          "name": "Get Nearby Places",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/places/nearby?lat=34.0522&lng=-118.2437&maxDistance=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "places", "nearby"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "34.0522",
+                  "description": "Los Angeles latitude"
+                },
+                {
+                  "key": "lng",
+                  "value": "-118.2437",
+                  "description": "Los Angeles longitude"
+                },
+                {
+                  "key": "maxDistance",
+                  "value": "50",
+                  "description": "Maximum distance in km"
+                }
+              ]
+            },
+            "description": "Get places near Los Angeles coordinates"
+          }
+        },
+        {
+          "name": "Get Nearby Places with Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/places/nearby?lat=37.7749&lng=-122.4194&category=beach&moodTags=chill,romantic&maxDistance=25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "places", "nearby"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "37.7749",
+                  "description": "San Francisco latitude"
+                },
+                {
+                  "key": "lng",
+                  "value": "-122.4194",
+                  "description": "San Francisco longitude"
+                },
+                {
+                  "key": "category",
+                  "value": "beach",
+                  "description": "Filter by category"
+                },
+                {
+                  "key": "moodTags",
+                  "value": "chill,romantic",
+                  "description": "Filter by mood tags"
+                },
+                {
+                  "key": "maxDistance",
+                  "value": "25",
+                  "description": "Maximum distance in km"
+                }
+              ]
+            },
+            "description": "Get filtered places near San Francisco"
+          }
+        },
+        {
+          "name": "Search Places",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/places/search?q=beach&lat=34.0522&lng=-118.2437",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "places", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "beach",
+                  "description": "Search query"
+                },
+                {
+                  "key": "lat",
+                  "value": "34.0522",
+                  "description": "User latitude for sorting"
+                },
+                {
+                  "key": "lng",
+                  "value": "-118.2437",
+                  "description": "User longitude for sorting"
+                }
+              ]
+            },
+            "description": "Search for places containing 'beach'"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Restaurants",
+      "item": [
+        {
+          "name": "Get Nearby Restaurants",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/nearby?lat=34.0522&lng=-118.2437&maxDistance=30",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants", "nearby"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "34.0522",
+                  "description": "Los Angeles latitude"
+                },
+                {
+                  "key": "lng",
+                  "value": "-118.2437",
+                  "description": "Los Angeles longitude"
+                },
+                {
+                  "key": "maxDistance",
+                  "value": "30",
+                  "description": "Maximum distance in km"
+                }
+              ]
+            },
+            "description": "Get restaurants near Los Angeles"
+          }
+        },
+        {
+          "name": "Get Nearby Restaurants with Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/nearby?lat=37.7749&lng=-122.4194&cuisine=mexican&priceRange=$&moodTags=chill",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants", "nearby"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "37.7749",
+                  "description": "San Francisco latitude"
+                },
+                {
+                  "key": "lng",
+                  "value": "-122.4194",
+                  "description": "San Francisco longitude"
+                },
+                {
+                  "key": "cuisine",
+                  "value": "mexican",
+                  "description": "Filter by cuisine type"
+                },
+                {
+                  "key": "priceRange",
+                  "value": "$",
+                  "description": "Filter by price range"
+                },
+                {
+                  "key": "moodTags",
+                  "value": "chill",
+                  "description": "Filter by mood"
+                }
+              ]
+            },
+            "description": "Get Mexican restaurants in San Francisco"
+          }
+        },
+        {
+          "name": "Search Restaurants",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/search?q=ramen&lat=34.0522&lng=-118.2437",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "ramen",
+                  "description": "Search for ramen restaurants"
+                },
+                {
+                  "key": "lat",
+                  "value": "34.0522",
+                  "description": "User latitude"
+                },
+                {
+                  "key": "lng",
+                  "value": "-118.2437",
+                  "description": "User longitude"
+                }
+              ]
+            },
+            "description": "Search for ramen restaurants"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Get Nearby Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/nearby?lat=34.0522&lng=-118.2437&maxDistance=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events", "nearby"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "34.0522",
+                  "description": "Los Angeles latitude"
+                },
+                {
+                  "key": "lng",
+                  "value": "-118.2437",
+                  "description": "Los Angeles longitude"
+                },
+                {
+                  "key": "maxDistance",
+                  "value": "50",
+                  "description": "Maximum distance in km"
+                }
+              ]
+            },
+            "description": "Get events near Los Angeles"
+          }
+        },
+        {
+          "name": "Get Nearby Events with Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/nearby?lat=40.7484&lng=-73.9857&type=concert&moodTags=turn-up&status=upcoming",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events", "nearby"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "40.7484",
+                  "description": "New York latitude"
+                },
+                {
+                  "key": "lng",
+                  "value": "-73.9857",
+                  "description": "New York longitude"
+                },
+                {
+                  "key": "type",
+                  "value": "concert",
+                  "description": "Filter by event type"
+                },
+                {
+                  "key": "moodTags",
+                  "value": "turn-up",
+                  "description": "Filter by mood"
+                },
+                {
+                  "key": "status",
+                  "value": "upcoming",
+                  "description": "Filter by status"
+                }
+              ]
+            },
+            "description": "Get upcoming concerts in NYC"
+          }
+        },
+        {
+          "name": "Get Events by Date Range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/date-range?startDate=2024-02-15&endDate=2024-02-25&lat=34.0522&lng=-118.2437",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events", "date-range"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-02-15",
+                  "description": "Start date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-02-25",
+                  "description": "End date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "lat",
+                  "value": "34.0522",
+                  "description": "User latitude"
+                },
+                {
+                  "key": "lng",
+                  "value": "-118.2437",
+                  "description": "User longitude"
+                }
+              ]
+            },
+            "description": "Get events in a specific date range"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"testpassword123\",\n  \"name\": \"Test User\",\n  \"bio\": \"Test user for API testing\",\n  \"preferences\": {\n    \"categories\": [\"beach\", \"restaurant\"],\n    \"moodTags\": [\"chill\", \"adventurous\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "register"]
+            },
+            "description": "Register a new user account"
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"testpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "login"]
+            },
+            "description": "Login with existing user credentials"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Profile (Requires Auth)",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "description": "JWT token from login response"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "profile"]
+            },
+            "description": "Get current user's profile"
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "description": "JWT token from login response"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Test User\",\n  \"bio\": \"Updated bio for testing\",\n  \"preferences\": {\n    \"categories\": [\"nature\", \"cultural\"],\n    \"moodTags\": [\"romantic\", \"solo\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "profile"]
+            },
+            "description": "Update user profile information"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Server Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Check if the server is running"
+          }
+        }
+      ]
+    }
+  ]
+} 
