@@ -58,7 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (userData: RegisterData): Promise<{ success: boolean; error?: string }> => {
+  const register = async (userData: RegisterData): Promise<{ success: boolean; error?: string; requiresConfirmation?: boolean }> => {
     try {
       const response = await apiRequest('/api/users/register', {
         method: 'POST',
@@ -66,6 +66,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (response.success) {
+        // Check if email confirmation is required
+        if (response.data.requiresConfirmation) {
+          return { 
+            success: true, 
+            requiresConfirmation: true,
+            error: response.message || 'Please check your email to confirm your account.'
+          };
+        }
+        
+        // User is fully registered and logged in
         localStorage.setItem('token', response.data.token);
         setUser(response.data.user);
         return { success: true };

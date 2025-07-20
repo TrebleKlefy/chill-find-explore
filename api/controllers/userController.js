@@ -5,46 +5,79 @@ exports.register = async (req, res) => {
   try {
     const { email, password, name } = req.body;
 
-    // Create user with Supabase Auth
+    // Just create the auth user - profile is created automatically
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
-      password
+      password,
+      options: {
+        data: { name } // This gets stored in raw_user_meta_data
+      }
     });
 
     if (authError) {
       return res.status(400).json({ message: authError.message });
     }
 
-    // Create user profile in database
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .insert([
-        {
-          id: authData.user.id,
-          email,
-          name,
-          preferences: {},
-          contributions: { placesSubmitted: 0, placesApproved: 0, reviewsSubmitted: 0 },
-          saved_places: []
-        }
-      ])
-      .select()
-      .single();
-
-    if (userError) {
-      return res.status(400).json({ message: userError.message });
-    }
-
-    res.status(201).json({
-      message: 'User registered successfully',
-      user: {
-        id: userData.id,
-        name: userData.name,
-        email: userData.email,
-        role: userData.role
-      },
-      session: authData.session
+    // Debug logging
+    console.log('Auth Data:', {
+      user: authData.user ? { id: authData.user.id, email: authData.user.email } : null,
+      session: authData.session ? 'exists' : 'missing',
+      user_metadata: authData.user?.user_metadata
     });
+
+    // Check if we have a session (user might need to confirm email)
+    if (!authData.session) {
+      // Try to sign in the user immediately after registration
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (signInError || !signInData.session) {
+        return res.status(201).json({
+          success: true,
+          message: 'User registered successfully. Please check your email to confirm your account.',
+          data: {
+            user: {
+              id: authData.user.id,
+              name: authData.user.user_metadata.name,
+              email: authData.user.email,
+              role: 'user'
+            },
+            requiresConfirmation: true
+          }
+        });
+      }
+
+      // Use the sign-in session
+      res.status(201).json({
+        success: true,
+        message: 'User registered successfully',
+        data: {
+          user: {
+            id: signInData.user.id,
+            name: signInData.user.user_metadata.name,
+            email: signInData.user.email,
+            role: 'user'
+          },
+          token: signInData.session.access_token
+        }
+      });
+    } else {
+      res.status(201).json({
+        success: true,
+        message: 'User registered successfully',
+        data: {
+          user: {
+            id: authData.user.id,
+            name: authData.user.user_metadata.name,
+            email: authData.user.email,
+            role: 'user'
+          },
+          token: authData.session.access_token
+        }
+      });
+    }
   } catch (error) {
     console.error('Registration error:', error);
     res.status(400).json({ message: error.message });
@@ -78,9 +111,12 @@ exports.login = async (req, res) => {
     }
 
     res.json({
+      success: true,
       message: 'Login successful',
-      user: userData,
-      session: authData.session
+      data: {
+        user: userData,
+        token: authData.session.access_token
+      }
     });
   } catch (error) {
     console.error('Login error:', error);
