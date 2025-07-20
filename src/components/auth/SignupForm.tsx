@@ -53,11 +53,21 @@ const SignupForm = ({ onSuccess, onSwitchToLogin }: SignupFormProps) => {
     const result = await register({ name, email, password });
     
     if (result.success) {
-      toast({
-        title: "Account created!",
-        description: "Welcome to Chill Find Explore! You can now start exploring.",
-      });
-      onSuccess?.();
+      if (result.requiresConfirmation) {
+        // Email confirmation required
+        toast({
+          title: "Account created!",
+          description: result.error || "Please check your email to confirm your account.",
+        });
+        setError(result.error || "Please check your email to confirm your account.");
+      } else {
+        // Fully registered and logged in
+        toast({
+          title: "Account created!",
+          description: "Welcome to Chill Find Explore! You can now start exploring.",
+        });
+        onSuccess?.();
+      }
     } else {
       const errorMessage = result.error || "Registration failed. Please try again.";
       setError(errorMessage);
